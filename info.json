@@ -1,0 +1,9 @@
+{
+  "name": "filtered-deconstruction-planner",
+  "version": "0.1.0",
+  "title": "Filtered Deconstruction Planner",
+  "author": "Dominik Kaisers (NearlyDutch)",
+  "homepage": "",
+  "dependencies": ["base >= 0.12.12"],
+  "description": "Target specific objects (and trees, of course) to be deconstructed by bots."
+}
