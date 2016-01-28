@@ -1,8 +1,6 @@
 require "defines"
 require "util"
-
-MAX_CONFIG_SIZE = 8
-
+require "config"
 require "gui"
 
 function update_gui()
@@ -24,6 +22,12 @@ end
 local function init_player(player)
 	global["config"][player.name] = global["config"][player.name] or {}
 	global["config-tmp"][player.name] = global["config-tmp"][player.name] or {}
+
+	global["config"][player.name]["mode"] = global["config"][player.name]["mode"] or DEFUALT_FILTER_MODE
+	global["config-tmp"][player.name]["mode"] = global["config-tmp"][player.name]["mode"] or DEFUALT_FILTER_MODE
+
+	global["config"][player.name]["filter"] = global["config"][player.name]["filter"] or {}
+	global["config-tmp"][player.name]["filter"] = global["config-tmp"][player.name]["filter"] or {}
 end
 
 local function init_players()
@@ -42,6 +46,30 @@ local function on_init()
 end
 
 local function on_configuration_changed(data)
+	if not data or not data.mod_changes then
+		return
+	end
+
+	if data.mod_changes["filtered-deconstruction-planner"] and data.mod_changes["filtered-deconstruction-planner"].old_version then
+		if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.2.0" then
+			if global["config"] then
+				for player_name, filter_data in pairs(global["config"]) do
+					global["config"][player_name] = {}
+					global["config"][player_name]["mode"] = DEFUALT_FILTER_MODE
+					global["config"][player_name]["filter"] = filter_data or {}
+				end
+			end
+
+			if global["config-temp"] then
+				for playername, filter_data in pairs(global["config-tmp"]) do
+					global["config-tmp"][player_name] = {}
+					global["config-tmp"][player_name]["mode"] = DEFUALT_FILTER_MODE
+					global["config-tmp"][player_name]["filter"] = filter_data or {}
+				end
+			end
+		end
+	end
+
 	init_global()
 	update_gui()
 end
@@ -70,14 +98,16 @@ script.on_event(defines.events.on_marked_for_deconstruction, function(event)
 			return
 		end
 
-		local to_deconstruct = false
-		for i = 1, MAX_CONFIG_SIZE do
-			if global["config"][player.name][i] == entity.name then
-				to_deconstruct = true
+		local is_configured = false
+		for i = 1, MAX_FILTER_COUNT do
+			if global["config"][player.name]["filter"][i] == entity.name then
+				is_configured = true
 			end
 		end
 
-		if not to_deconstruct then
+		if global["config"][player.name]["mode"] == "target" and not is_configured then
+			entity.cancel_deconstruction(entity.force)
+		elseif global["config"][player.name]["mode"] == "exclude" and is_configured then
 			entity.cancel_deconstruction(entity.force)
 		end
 	end)
@@ -99,6 +129,12 @@ script.on_event(defines.events.on_gui_click, function(event)
 			if index then
 				gui_set_rule(player, tonumber(index))
 			end
+		elseif element.name == "filtered-deconstruction-planner-mode-normal" then
+			gui_set_mode(player, "normal")
+		elseif element.name == "filtered-deconstruction-planner-mode-target" then
+			gui_set_mode(player, "target")
+		elseif element.name == "filtered-deconstruction-planner-mode-exclude" then
+			gui_set_mode(player, "exclude")
 		end
 	end)
 end)
