@@ -82,14 +82,20 @@ script.on_event(defines.events.on_marked_for_deconstruction, function(event)
 	pcall(function()
 		local entity = event.entity
 		local player = nil
+		local found_deconstruction_item = false
 
 		for _, p in pairs(game.players) do
 			local stack = p.cursor_stack
 			if stack.valid_for_read then
-				if stack.name == "filtered-deconstruction-planner" then
-					player = p
-				else
-					return
+				if stack.type == "deconstruction-item" then
+					if stack.name == "filtered-deconstruction-planner" and not found_deconstruction_item then
+						player = p
+					elseif found_deconstruction_item then
+						entity.cancel_deconstruction(entity.force)
+						return
+					end
+
+					found_deconstruction_item = true
 				end
 			end
 		end
