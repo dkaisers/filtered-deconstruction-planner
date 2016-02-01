@@ -66,3 +66,31 @@ data.raw["gui-style"].default["fdp-icon-style"] = {
         x = 111
     }
 }
+
+data.raw["gui-style"].default["fdp-icon-fdp-tree-proxy"] = {
+    type = "checkbox_style",
+    parent = "fdp-icon-style",
+    width = 32,
+    height = 32,
+    bottom_padding = 8,
+    default_background = {
+        filename = "__base__/graphics/icons/tree-03.png",
+        width = 32,
+        height = 32
+    },
+    hovered_background = {
+        filename = "__base__/graphics/icons/tree-03.png",
+        width = 32,
+        height = 32
+    },
+    clicked_background = {
+        filename = "__base__/graphics/icons/tree-03.png",
+        width = 32,
+        height = 32
+    },
+    checked = {
+        filename = "__base__/graphics/icons/tree-03.png",
+        width = 32,
+        height = 32
+    }
+}

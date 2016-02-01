@@ -66,6 +66,7 @@ GUI = {
 	end
 }
 
+-- Initializes the GUI
 function gui_init(player, after_research)
 	if not player.gui.top["filtered-deconstruction-planner-config-button"] and (player.force.technologies["automated-construction"].researched or after_research) then
 		player.gui.top.add{
@@ -76,6 +77,17 @@ function gui_init(player, after_research)
 	end
 end
 
+-- Refreshes the configuration window if it is currently showing
+function gui_refresh(player)
+	local frame = player.gui.left["filtered-deconstruction-planner-frame"]
+
+	if frame then
+		frame.destroy()
+		gui_open_frame(player)
+	end
+end
+
+-- Helper method to add a text as label to the given parent
 local function add_label(parent, text)
 	parent.add{
 		type = "label",
@@ -83,26 +95,13 @@ local function add_label(parent, text)
 	}
 end
 
+-- Shows or hides the configuration window
 function gui_open_frame(player)
 	local frame = player.gui.left["filtered-deconstruction-planner-frame"]
 
 	if frame then
 		frame.destroy()
-		global["config-tmp"][player.name] = nil
 		return
-	end
-
-	global["config"][player.name] = global["config"][player.name] or {}
-	global["config-tmp"][player.name] = {}
-	global["config-tmp"][player.name]["filter"] = {}
-
-	local i = 0
-	for i = 1, MAX_FILTER_COUNT do
-		if i > #global["config"][player.name]["filter"] then
-			global["config-tmp"][player.name]["filter"][i] = ""
-		else
-			global["config-tmp"][player.name]["filter"][i] = global["config"][player.name]["filter"][i]
-		end
 	end
 
 	frame = player.gui.left.add{
@@ -157,12 +156,17 @@ function gui_open_frame(player)
 	}
 
 	if global["config"][player.name]["mode"] ~= "normal" then
-		local filter_grid = frame.add{
-			type = "flow",
-			name = "filtered-deconstruction-planner-filter-grid",
-			direction = "horizontal"
-		}
-		for i = 1, MAX_FILTER_COUNT do
+		local filter_grid
+
+		for i = 1, #global["config"][player.name]["filter"] do
+			if i % 8 == 1 then
+				filter_grid = frame.add{
+					type = "flow",
+					name = "filtered-deconstruction-planner-filter-grid-"..(((i-(i%8))/8)+1),
+					direction = "horizontal"
+				}
+			end
+
 			local style = global["config"][player.name]["filter"][i] or "style"
 			style = style == "" and "style" or style
 
@@ -173,103 +177,118 @@ function gui_open_frame(player)
 				state = false
 			}
 		end
+
+		local counter = (#global["config"][player.name]["filter"] + 1)
+		if counter % 8 == 1 then
+			filter_grid = frame.add{
+				type = "flow",
+				name = "filtered-deconstruction-planner-filter-grid-"..(((counter-(counter%8))/8)+1),
+				direction = "horizontal"
+			}
+		end
+		filter_grid.add{
+			type = "checkbox",
+			name = "filtered-deconstruction-planner-icon-"..counter,
+			style = "fdp-icon-style",
+			state = false
+		}
 	end
 
 	if global["config"][player.name]["mode"] ~= "normal" then
+		local tmp_grid = frame.add{
+			type = "flow",
+			direction = "horizontal"
+		}
+		tmp_grid.add{
+			type = "label",
+			caption = "                                                                                                                                                                                                                                                                    ",
+			style = "filtered-deconstruction-planner-mini-label"
+		}
+
 		local button_grid = frame.add{
 			type = "flow",
 			name = "filtered-deconstruction-planner-button-grid",
 			direction = "horizontal"
 		}
-		button_grid.add{
-			type = "button",
-			name = "filtered-deconstruction-planner-save",
-			caption = {"filtered-deconstruction-planner-button-save"},
-			style = "filtered-deconstruction-planner-small-button"
-		}
+
+		if global["eyedropper-list"][player.name] then
+			button_grid.add{
+				type = "button",
+				name = "filtered-deconstruction-planner-remove-eyedropper",
+				style = "filtered-deconstruction-planner-button-eyedropper-remove"
+			}
+		else
+			button_grid.add{
+				type = "button",
+				name = "filtered-deconstruction-planner-insert-eyedropper",
+				style = "filtered-deconstruction-planner-button-eyedropper-insert"
+			}
+		end
+
 		button_grid.add{
 			type = "button",
 			name = "filtered-deconstruction-planner-clear",
-			caption = {"filtered-deconstruction-planner-button-clear"},
-			style = "filtered-deconstruction-planner-small-button"
+			style = "filtered-deconstruction-planner-button-clear"
 		}
 	end
 end
 
-function gui_save(player, name)
-	if global["config-tmp"][player.name] then
-		local i = 0
-		local mode = global["config"][player.name]["mode"]
-		global["config"][player.name] = {}
-		global["config"][player.name]["mode"] = mode
-		global["config"][player.name]["filter"] = {}
-
-		for i = 1, #global["config-tmp"][player.name]["filter"] do
-			global["config"][player.name]["filter"][i] = global["config-tmp"][player.name]["filter"][i]
-		end
-		global["config-tmp"][player.name] = nil
-	end
-
-	local frame = player.gui.left["filtered-deconstruction-planner-frame"]
-end
-
+-- Clears all filter configuration slots
 function gui_clear(player)
-	local i = 0
-	local frame = player.gui.left["filtered-deconstruction-planner-frame"]
-
-	if not frame then
-		return
-	end
-
-	local filter_grid = frame["filtered-deconstruction-planner-filter-grid"]
-
-	for i = 1, #global["config-tmp"][player.name]["filter"] do
-		global["config-tmp"][player.name]["filter"][i] = ""
-		filter_grid["filtered-deconstruction-planner-icon-"..i].style = "fdp-icon-style"
-	end
+	global["config"][player.name]["filter"] = {}
+	gui_refresh(player)
 end
 
+-- Called when a filter configuration slot is clicked and sets filter if valid
 function gui_set_rule(player, index)
-	local frame = player.gui.left["filtered-deconstruction-planner-frame"]
-	if not frame or not global["config-tmp"][player.name] then
-		player.print("No config?!")
-		return
-	end
-
 	local stack = player.cursor_stack
-	if not stack.valid_for_read then
-		stack = {type = "empty", name = ""}
-		global["config-tmp"][player.name]["filter"][index] = ""
-	end
+	local entity_name
 
-	local i = 0
-	for i = 1, #global["config-tmp"][player.name]["filter"] do
-		if stack.type ~= "empty" and index ~= i and global["config-tmp"][player.name]["filter"][i] == stack.name then
+	if not stack.valid_for_read then
+		table.remove(global["config"][player.name]["filter"], index)
+	else
+		entity_name = stack.name
+		if is_in_filter(player, entity_name) then
 			player.print({"filtered-deconstruction-planner-duplicate"})
-			return
+		elseif entity_name ~= "fdp-eyedropper" then
+			global["config"][player.name]["filter"][index] = entity_name
 		end
 	end
-
-	global["config-tmp"][player.name]["filter"][index] = stack.name
-
-	local filter_grid = frame["filtered-deconstruction-planner-filter-grid"]
-	local style = global["config-tmp"][player.name]["filter"][index] ~= "" and "fdp-icon-"..global["config-tmp"][player.name]["filter"][index] or "fdp-icon-style"
-
-	filter_grid["filtered-deconstruction-planner-icon-"..index].style = style
-	filter_grid["filtered-deconstruction-planner-icon-"..index].state = false
+	
+	gui_refresh(player)
 end
 
+-- Change mode of filtered deconstruction planner
 function gui_set_mode(player, mode)
-	local frame = player.gui.left["filtered-deconstruction-planner-frame"]
-	if not frame or not global["config"][player.name] then
-		return
-	end
-
 	global["config"][player.name]["mode"] = mode
-
 	player.gui.top["filtered-deconstruction-planner-config-button"].style = "filtered-deconstruction-planner-button-"..mode
 
-	frame.destroy()
-	global["config-tmp"][player.name] = nil
-	gui_open_frame(player)
+	gui_refresh(player)
+end
+
+-- Insert eyedropper tool into player cursor stack if possible
+function gui_insert_eyedropper(player)
+	if player.cursor_stack.valid_for_read then
+		player.print({"filtered-deconstruction-planner-hands"})
+	else
+		player.cursor_stack.set_stack({name = "fdp-eyedropper", count = 1})
+		global["eyedropper-list"][player.name] = true
+		script.on_event(defines.events.on_tick, on_tick)
+		gui_refresh(player)
+	end
+end
+
+-- Remove eyedropper tool from hand and inventory
+function gui_remove_eyedropper(player)
+	if player.cursor_stack.valid_for_read then
+		if player.cursor_stack.name == "fdp-eyedropper" then
+			player.cursor_stack.clear()
+			global["eyedropper-list"][player.name] = nil
+			gui_refresh(player)
+
+			if #global["eyedropper-list"] == 0 then
+				script.on_event(defines.events.on_tick, nil)
+			end
+		end
+	end
 end
