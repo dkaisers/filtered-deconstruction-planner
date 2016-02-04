@@ -1,293 +1,119 @@
 data:extend({
 	{
 		type = "font",
-		name = "filtered-deconstruction-planner-small-font",
+		name = "fdp-small-font",
 		from = "default",
 		size = 16
 	},
     {
         type = "font",
-        name = "filtered-deconstruction-planner-mini-font",
+        name = "fdp-mini-font",
         from = "default",
         size = 4
     }
 })
 
-data.raw["gui-style"].default["filtered-deconstruction-planner-mini-label"] = {
-    type = "label_style",
+-- Mini label to force line break after configuration slots
+data.raw["gui-style"].default["fdp-mini-label"] = {
+    type   = "label_style",
     parent = "default",
-    font = "filtered-deconstruction-planner-mini-font",
+    font   = "fdp-mini-font",
 }
 
-data.raw["gui-style"].default["filtered-deconstruction-planner-small-button"] = {
-	type = "button_style",
-	parent = "default",
-	font = "filtered-deconstruction-planner-small-font",
+-- Insert GUI button styles
+local modes = {
+    "normal",
+    "target",
+    "exclude",
+    "eyedropper"
 }
 
-data.raw["gui-style"].default["filtered-deconstruction-planner-button-normal"] = {
-	type = "button_style",
-	parent = "button_style",
-	width = 33,
-	height = 33,
-	top_padding = 6,
-	right_padding = 6,
-	bottom_padding = 6,
-	left_padding = 0,
-	font = "filtered-deconstruction-planner-small-font",
-	default_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-normal.png",
-            priority = "extra-high-no-scale",
-            width = 32,
-            height = 32,
-            x = 64
-        }
-    },
-    hovered_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-normal.png",
-            priority = "extra-high-no-scale",
-            width = 32,
-            height = 32,
-            x = 96
-        }
-    },
-    clicked_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-normal.png",
-            width = 32,
-            height = 32,
-            x = 96
+for _, mode in pairs(modes) do
+    data.raw["gui-style"].default["fdp-gui-button-"..mode] = {
+        type   = "button_style",
+        parent = "button_style",
+        width  = 33,
+        height = 33,
+        font   = "fdp-small-font",
+        top_padding    = 6,
+        right_padding  = 6,
+        bottom_padding = 6,
+        left_padding   = 0,
+        default_graphical_set = {
+            type = "monolith",
+            monolith_image = {
+                filename = "__filtered-deconstruction-planner__/graphics/gui-"..mode..".png",
+                priority = "extra-high-no-scale",
+                width    = 32,
+                height   = 32,
+                x        = 0
+            }
+        },
+        hovered_graphical_set = {
+            type = "monolith",
+            monolith_image = {
+                filename = "__filtered-deconstruction-planner__/graphics/gui-"..mode..".png",
+                priority = "extra-high-no-scale",
+                width    = 32,
+                height   = 32,
+                x        = 32
+            }
+        },
+        clicked_graphical_set = {
+            type = "monolith",
+            monolith_image = {
+                filename = "__filtered-deconstruction-planner__/graphics/gui-"..mode..".png",
+                priority = "extra-high-no-scale",
+                width    = 32,
+                height   = 32,
+                x        = 32
+            }
         }
     }
+end
+
+-- Insert eyedropper and trash buttons
+local buttons = {
+    {key = "eyedropper-activate",   filename = "eyedropper", x = {default =  0, hovered = 30, clicked = 60}},
+    {key = "eyedropper-deactivate", filename = "eyedropper", x = {default = 60, hovered = 30, clicked =  0}},
+    {key = "clear",                 filename = "clear",      x = {default =  0, hovered = 30, clicked = 30}}
 }
 
-data.raw["gui-style"].default["filtered-deconstruction-planner-button-exclude"] = {
-    type = "button_style",
-    parent = "button_style",
-    width = 33,
-    height = 33,
-    top_padding = 6,
-    right_padding = 6,
-    bottom_padding = 6,
-    left_padding = 0,
-    font = "filtered-deconstruction-planner-small-font",
-    default_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-exclude.png",
-            priority = "extra-high-no-scale",
-            width = 32,
-            height = 32,
-            x = 64
-        }
-    },
-    hovered_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-exclude.png",
-            priority = "extra-high-no-scale",
-            width = 32,
-            height = 32,
-            x = 96
-        }
-    },
-    clicked_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-exclude.png",
-            width = 32,
-            height = 32,
-            x = 96
+for _, button in pairs(buttons) do
+    data.raw["gui-style"].default["fdp-button-"..button.key] = {
+        type   = "button_style",
+        parent = "button_style",
+        width  = 32,
+        height = 32,
+        default_graphical_set = {
+            type = "monolith",
+            monolith_image = {
+                filename = "__filtered-deconstruction-planner__/graphics/button-"..button.filename..".png",
+                priority = "extra-high-no-scale",
+                width    = 30,
+                height   = 30,
+                x        = button.x.default
+            }
+        },
+        hovered_graphical_set = {
+            type = "monolith",
+            monolith_image = {
+                filename = "__filtered-deconstruction-planner__/graphics/button-"..button.filename..".png",
+                priority = "extra-high-no-scale",
+                width    = 30,
+                height   = 30,
+                x        = button.x.hovered
+            }
+        },
+        clicked_graphical_set = {
+            type = "monolith",
+            monolith_image = {
+                filename = "__filtered-deconstruction-planner__/graphics/button-"..button.filename..".png",
+                priority = "extra-high-no-scale",
+                width    = 30,
+                height   = 30,
+                x        = button.x.clicked
+            }
         }
     }
-}
-
-data.raw["gui-style"].default["filtered-deconstruction-planner-button-target"] = {
-    type = "button_style",
-    parent = "button_style",
-    width = 33,
-    height = 33,
-    top_padding = 6,
-    right_padding = 6,
-    bottom_padding = 6,
-    left_padding = 0,
-    font = "filtered-deconstruction-planner-small-font",
-    default_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-target.png",
-            priority = "extra-high-no-scale",
-            width = 32,
-            height = 32,
-            x = 64
-        }
-    },
-    hovered_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-target.png",
-            priority = "extra-high-no-scale",
-            width = 32,
-            height = 32,
-            x = 96
-        }
-    },
-    clicked_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-target.png",
-            width = 32,
-            height = 32,
-            x = 96
-        }
-    }
-}
-
-data.raw["gui-style"].default["filtered-deconstruction-planner-button-clear"] = {
-    type = "button_style",
-    parent = "button_style",
-    width = 32,
-    height = 32,
-    default_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-clear.png",
-            priority = "extra-high-no-scale",
-            width = 30,
-            height = 30,
-            x = 0
-        }
-    },
-    hovered_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-clear.png",
-            priority = "extra-high-no-scale",
-            width = 30,
-            height = 30,
-            x = 30
-        }
-    },
-    clicked_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-clear.png",
-            width = 30,
-            height = 30,
-            x = 30
-        }
-    }
-}
-
-data.raw["gui-style"].default["filtered-deconstruction-planner-button-eyedropper-insert"] = {
-    type = "button_style",
-    parent = "button_style",
-    width = 32,
-    height = 32,
-    default_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-eyedropper.png",
-            priority = "extra-high-no-scale",
-            width = 30,
-            height = 30,
-            x = 0
-        }
-    },
-    hovered_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-eyedropper.png",
-            priority = "extra-high-no-scale",
-            width = 30,
-            height = 30,
-            x = 30
-        }
-    },
-    clicked_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-eyedropper.png",
-            width = 30,
-            height = 30,
-            x = 60
-        }
-    }
-}
-
-data.raw["gui-style"].default["filtered-deconstruction-planner-button-eyedropper-remove"] = {
-    type = "button_style",
-    parent = "button_style",
-    width = 32,
-    height = 32,
-    default_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-eyedropper.png",
-            priority = "extra-high-no-scale",
-            width = 30,
-            height = 30,
-            x = 60
-        }
-    },
-    hovered_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-eyedropper.png",
-            priority = "extra-high-no-scale",
-            width = 30,
-            height = 30,
-            x = 30
-        }
-    },
-    clicked_graphical_set =
-    {
-        type = "monolith",
-        monolith_image =
-        {
-            filename = "__filtered-deconstruction-planner__/graphics/gui-eyedropper.png",
-            width = 30,
-            height = 30,
-            x = 0
-        }
-    }
-}
+end

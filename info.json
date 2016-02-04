@@ -1,9 +1,9 @@
 {
   "name": "filtered-deconstruction-planner",
-  "version": "0.3.0",
+  "version": "0.3.1",
   "title": "Filtered Deconstruction Planner",
   "author": "Dominik Kaisers (NearlyDutch)",
   "homepage": "",
   "dependencies": ["base >= 0.12.22"],
-  "description": "Target specific objects (and trees, of course) to be deconstructed by bots."
+  "description": "Adds the ability for entities to be targeted for or be excluded from deconstruction by bots."
 }
