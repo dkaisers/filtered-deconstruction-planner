@@ -103,6 +103,10 @@ script.on_event(defines.events.on_gui_click, function(event)
 	local event_element = event.element.name
 	local event_player  = game.get_player(event.player_index)
 
+	if not global["config"][event_player.name] then
+		fdp_init_player(event_player)
+	end
+
 	if event_element == "fdp-gui-button" then
 		game.raise_event(FDP_EVENTS.on_gui_clicked, {player = event_player})
 	elseif event_element == "fdp-gui-normal-checkbox" then
@@ -145,6 +149,10 @@ script.on_event(defines.events.on_marked_for_deconstruction, function(event)
 
 	if not event_player then
 		return
+	end
+
+	if not global["config"][event_player.name] then
+		fdp_init_player(event_player)
 	end
 
 	if event.entity.name == "deconstructible-tile-proxy" and (global["config"][event_player.name]["mode"] ~= "normal" or global["config"][event_player.name]["eyedropping"]) then
