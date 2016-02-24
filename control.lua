@@ -15,6 +15,8 @@ function fdp_init_player(player)
 	global["config"][player.name]["mode"] = global["config"][player.name]["mode"] or FDP_DEFAULT_FILTER_MODE
 	global["config"][player.name]["filter"] = global["config"][player.name]["filter"] or {}
 	global["config"][player.name]["eyedropping"] = global["config"][player.name]["eyedropping"] or false
+
+	gui_init(player)
 end
 
 -- Initializes the mod config for all players
