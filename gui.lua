@@ -1,6 +1,8 @@
 -- Intializes the top button GUI element for the given player
-function gui_init(player)
-	if not player.gui.top["fdp-gui-button"] and player.force.technologies["automated-construction"] then
+function gui_init(player, researched)
+	researched = researched or false
+
+	if (not player.gui.top["fdp-gui-button"]) and (player.force.technologies["automated-construction"].researched or researched) then
 		player.gui.top.add{
 			type  = "button",
 			name  = "fdp-gui-button",

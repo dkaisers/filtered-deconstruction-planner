@@ -95,7 +95,7 @@ end)
 script.on_event(defines.events.on_research_finished, function(event)
 	if event.research.name == 'automated-construction' then
 		for _, player in pairs (event.research.force.players) do
-			gui_init(player)
+			gui_init(player, true)
 		end
 	end
 end)
