@@ -76,7 +76,8 @@ end
 local buttons = {
     {key = "eyedropper-activate",   filename = "eyedropper", x = {default =  0, hovered = 30, clicked = 60}},
     {key = "eyedropper-deactivate", filename = "eyedropper", x = {default = 60, hovered = 30, clicked =  0}},
-    {key = "clear",                 filename = "clear",      x = {default =  0, hovered = 30, clicked = 30}}
+    {key = "clear",                 filename = "clear",      x = {default =  0, hovered = 30, clicked = 30}},
+    {key = "cut",                   filename = "cut",        x = {default =  0, hovered = 30, clicked = 30}}
 }
 
 for _, button in pairs(buttons) do

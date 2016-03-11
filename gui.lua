@@ -104,6 +104,11 @@ function gui_show_frame(player)
 		}
 		button_grid.add{
 			type  = "button",
+			name  = "fdp-gui-cut-button",
+			style = "fdp-button-cut"
+		}
+		button_grid.add{
+			type  = "button",
 			name  = "fdp-gui-clear-button",
 			style = "fdp-button-clear"
 		}
@@ -170,4 +175,25 @@ end)
 script.on_event(FDP_EVENTS.on_button_clear_clicked, function(event)
 	global["config"][event.player.name]["filter"] = {}
 	gui_refresh(event.player)
+end)
+
+-- Called when the player clicks the cut button
+script.on_event(FDP_EVENTS.on_button_cut_clicked, function(event)
+	if not event.player.cursor_stack.valid_for_read or not event.player.cursor_stack.is_blueprint_setup() then
+		event.player.print({"fdp-error-missing-blueprint"})
+		return
+	end
+
+	local entities = event.player.cursor_stack.get_blueprint_entities()
+	for i = #entities, 1, -1 do
+		local mode = global["config"][event.player.name]["mode"]
+		local is_configured = is_in_filter(event.player, entities[i].name)
+
+		if mode == "target" and is_configured then
+			table.remove(entities, i)
+		elseif mode == "exclude" and not is_configured then
+			table.remove(entities, i)
+		end
+	end
+	event.player.cursor_stack.set_blueprint_entities(entities)
 end)

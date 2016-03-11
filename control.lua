@@ -126,6 +126,8 @@ script.on_event(defines.events.on_gui_click, function(event)
 		game.raise_event(FDP_EVENTS.on_button_eyedropper_clicked, {player = event_player})
 	elseif event_element == "fdp-gui-clear-button" then
 		game.raise_event(FDP_EVENTS.on_button_clear_clicked, {player = event_player})
+	elseif event_element == "fdp-gui-cut-button" then
+		game.raise_event(FDP_EVENTS.on_button_cut_clicked, {player = event_player})
 	end
 end)
 
