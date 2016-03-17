@@ -179,7 +179,7 @@ end)
 
 -- Called when the player clicks the cut button
 script.on_event(FDP_EVENTS.on_button_cut_clicked, function(event)
-	if not event.player.cursor_stack.valid_for_read or event.player.cursor_stack.type = "blueprint" or not event.player.cursor_stack.is_blueprint_setup() then
+	if not event.player.cursor_stack.valid_for_read or event.player.cursor_stack.type ~= "blueprint" or not event.player.cursor_stack.is_blueprint_setup() then
 		event.player.print({"fdp-error-missing-blueprint"})
 		return
 	end
