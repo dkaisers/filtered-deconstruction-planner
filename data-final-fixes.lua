@@ -8,12 +8,14 @@ for typename, sometype in pairs(data.raw) do
                 default_background = {
                     filename = item.icon,
                     width    = 32,
-                    height   = 32
+                    height   = 32,
+                    scale    = 1.75
                 },
                 hovered_background = {
                     filename = item.icon,
                     width    = 32,
-                    height   = 32
+                    height   = 32,
+                    scale    = 1.75
                 },
                 checked_background = {
                     filename = item.icon,

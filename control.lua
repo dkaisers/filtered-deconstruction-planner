@@ -1,4 +1,3 @@
-require "defines"
 require "util"
 require "config"
 require "lib"
@@ -11,10 +10,10 @@ end
 
 -- Initializes the mod config for the given player
 function fdp_init_player(player)
-	global["config"][player.name] = global["config"][player.name] or {}
-	global["config"][player.name]["mode"] = global["config"][player.name]["mode"] or FDP_DEFAULT_FILTER_MODE
-	global["config"][player.name]["filter"] = global["config"][player.name]["filter"] or {}
-	global["config"][player.name]["eyedropping"] = global["config"][player.name]["eyedropping"] or false
+	global["config"][player.index] = global["config"][player.index] or {}
+	global["config"][player.index]["mode"] = global["config"][player.index]["mode"] or FDP_DEFAULT_FILTER_MODE
+	global["config"][player.index]["filter"] = global["config"][player.index]["filter"] or {}
+	global["config"][player.index]["eyedropping"] = global["config"][player.index]["eyedropping"] or false
 
 	gui_init(player)
 end
@@ -49,15 +48,15 @@ script.on_configuration_changed(function(data)
 	if data.mod_changes["filtered-deconstruction-planner"] and data.mod_changes["filtered-deconstruction-planner"].old_version then
 		if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.2.0" then
 			if global["config"] then
-				for player_name, filter_data in pairs(global["config"]) do
-					global["config"][player_name] = {}
-					global["config"][player_name]["mode"] = FDP_DEFAULT_FILTER_MODE
-					global["config"][player_name]["filter"] = filter_data or {}
+				for player_index, filter_data in pairs(global["config"]) do
+					global["config"][player_index] = {}
+					global["config"][player_index]["mode"] = FDP_DEFAULT_FILTER_MODE
+					global["config"][player_index]["filter"] = filter_data or {}
 				end
 			end
 		elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.0" then
 			if global["config"] then
-				for player_name, player_data in pairs(global["config"]) do
+				for player_index, player_data in pairs(global["config"]) do
 					local tmp_data = {}
 
 					for _, filter_entry in pairs(player_data["filter"]) do
@@ -66,7 +65,7 @@ script.on_configuration_changed(function(data)
 						end
 					end
 
-					global["config"][player_name]["filter"] = tmp_data
+					global["config"][player_index]["filter"] = tmp_data
 				end
 			end
 		elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.1" then
@@ -78,6 +77,9 @@ script.on_configuration_changed(function(data)
 					player.gui.left["filtered-deconstruction-planner-frame"].destroy()
 				end
 			end
+		end
+		if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.4.2" then
+		  global.config = {}
 		end
 	end
 
@@ -103,9 +105,8 @@ end)
 -- on_gui_click event handler
 script.on_event(defines.events.on_gui_click, function(event)
 	local event_element = event.element.name
-	local event_player  = game.get_player(event.player_index)
-
-	if not global["config"][event_player.name] then
+	local event_player  = game.players[event.player_index]
+	if not global["config"][event_player.index] then
 		fdp_init_player(event_player)
 	end
 
@@ -133,55 +134,38 @@ end)
 
 -- on_marked_for_deconstruction event handler
 script.on_event(defines.events.on_marked_for_deconstruction, function(event)
-	local event_player = nil
-	local found_deconstruction_item = false
+  if not event.player_index then
+    return
+  end
+	local player = game.players[event.player_index]
 
-	for _, player in pairs(game.players) do
-		if player.cursor_stack.valid_for_read then
-			if player.cursor_stack.type == "deconstruction-item" then
-				if player.cursor_stack.name == "filtered-deconstruction-planner" and not found_deconstruction_item then
-					event_player = player
-				elseif found_deconstruction_item then
-					event.entity.cancel_deconstruction(player.force)
-					return
-				end
-
-				found_deconstruction_item = true
-			end
-		end
+	if not global["config"][player.index] then
+		fdp_init_player(player)
 	end
 
-	if not event_player then
+	if event.entity.name == "deconstructible-tile-proxy" and (global["config"][player.index]["mode"] ~= "normal" or global["config"][player.index]["eyedropping"]) then
+		event.entity.cancel_deconstruction(player.force)
 		return
 	end
 
-	if not global["config"][event_player.name] then
-		fdp_init_player(event_player)
-	end
-
-	if event.entity.name == "deconstructible-tile-proxy" and (global["config"][event_player.name]["mode"] ~= "normal" or global["config"][event_player.name]["eyedropping"]) then
-		event.entity.cancel_deconstruction(event_player.force)
-		return
-	end
-
-	if global["config"][event_player.name]["mode"] == "normal" and not global["config"][event_player.name]["eyedropping"] then
+	if global["config"][player.index]["mode"] == "normal" and not global["config"][player.index]["eyedropping"] then
 		return
 	end
 
 	local entity_name = get_entity_name(event.entity)
-	local is_configured = is_in_filter(event_player, entity_name)
+	local is_configured = is_in_filter(player, entity_name)
 
-	if global["config"][event_player.name]["eyedropping"] then
-		event.entity.cancel_deconstruction(event_player.force)
+	if global["config"][player.index]["eyedropping"] then
+		event.entity.cancel_deconstruction(player.force)
 		if  not is_configured then
-			table.insert(global["config"][event_player.name]["filter"], entity_name)
+			table.insert(global["config"][player.index]["filter"], entity_name)
 		end
-		gui_refresh(event_player)
+		gui_refresh(player)
 	else
-		if global["config"][event_player.name]["mode"] == "target" and not is_configured then
-			event.entity.cancel_deconstruction(event_player.force)
-		elseif global["config"][event_player.name]["mode"] == "exclude" and is_configured then
-			event.entity.cancel_deconstruction(event_player.force)
+		if global["config"][player.index]["mode"] == "target" and not is_configured then
+			event.entity.cancel_deconstruction(player.force)
+		elseif global["config"][player.index]["mode"] == "exclude" and is_configured then
+			event.entity.cancel_deconstruction(player.force)
 		end
 	end
 end)

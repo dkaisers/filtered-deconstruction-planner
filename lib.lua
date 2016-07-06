@@ -14,8 +14,8 @@ end
 
 -- Check if the given entity-name is in the current filter configuration
 function is_in_filter(player, entity_name)
-	for i = 1, #global["config"][player.name]["filter"] do
-		if global["config"][player.name]["filter"][i] == entity_name then
+	for i = 1, #global["config"][player.index]["filter"] do
+		if global["config"][player.index]["filter"][i] == entity_name then
 			return true
 		end
 	end
