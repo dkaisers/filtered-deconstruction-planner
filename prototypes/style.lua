@@ -16,7 +16,7 @@ data:extend({
 -- Mini label to force line break after configuration slots
 data.raw["gui-style"].default["fdp-mini-label"] = {
     type   = "label_style",
-    parent = "default",
+    parent = "label_style",
     font   = "fdp-mini-font",
 }
 
