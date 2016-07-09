@@ -5,167 +5,167 @@ require "gui"
 
 -- Initializes the mod config
 function fdp_init_global()
-	global["config"] = global["config"] or {}
+  global["config"] = global["config"] or {}
 end
 
 -- Initializes the mod config for the given player
 function fdp_init_player(player)
-	global["config"][player.index] = global["config"][player.index] or {}
-	global["config"][player.index]["mode"] = global["config"][player.index]["mode"] or FDP_DEFAULT_FILTER_MODE
-	global["config"][player.index]["filter"] = global["config"][player.index]["filter"] or {}
-	global["config"][player.index]["eyedropping"] = global["config"][player.index]["eyedropping"] or false
+  global["config"][player.index] = global["config"][player.index] or {}
+  global["config"][player.index]["mode"] = global["config"][player.index]["mode"] or FDP_DEFAULT_FILTER_MODE
+  global["config"][player.index]["filter"] = global["config"][player.index]["filter"] or {}
+  global["config"][player.index]["eyedropping"] = global["config"][player.index]["eyedropping"] or false
 
-	gui_init(player)
+  gui_init(player)
 end
 
 -- Initializes the mod config for all players
 function fdp_init_players()
-	for _, player in pairs(game.players) do
-		fdp_init_player(player)
-	end
+  for _, player in pairs(game.players) do
+    fdp_init_player(player)
+  end
 end
 
 -- Initializes the gui for all players
 function fdp_init_gui()
-	for _, player in pairs(game.players) do
-		gui_init(player)
-	end
+  for _, player in pairs(game.players) do
+    gui_init(player)
+  end
 end
 
 -- on_init event handler
 script.on_init(function()
-	fdp_init_global()
-	fdp_init_players()
-	fdp_init_gui()
-end)
+    fdp_init_global()
+    fdp_init_players()
+    fdp_init_gui()
+  end)
 
 -- on_configuration_changed event handler
 script.on_configuration_changed(function(data)
-	if not data or not data.mod_changes then
-		return
-	end
+    if not data or not data.mod_changes then
+      return
+    end
 
-	if data.mod_changes["filtered-deconstruction-planner"] and data.mod_changes["filtered-deconstruction-planner"].old_version then
-		if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.2.0" then
-			if global["config"] then
-				for player_index, filter_data in pairs(global["config"]) do
-					global["config"][player_index] = {}
-					global["config"][player_index]["mode"] = FDP_DEFAULT_FILTER_MODE
-					global["config"][player_index]["filter"] = filter_data or {}
-				end
-			end
-		elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.0" then
-			if global["config"] then
-				for player_index, player_data in pairs(global["config"]) do
-					local tmp_data = {}
+    if data.mod_changes["filtered-deconstruction-planner"] and data.mod_changes["filtered-deconstruction-planner"].old_version then
+      if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.2.0" then
+        if global["config"] then
+          for player_index, filter_data in pairs(global["config"]) do
+            global["config"][player_index] = {}
+            global["config"][player_index]["mode"] = FDP_DEFAULT_FILTER_MODE
+            global["config"][player_index]["filter"] = filter_data or {}
+          end
+        end
+      elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.0" then
+        if global["config"] then
+          for player_index, player_data in pairs(global["config"]) do
+            local tmp_data = {}
 
-					for _, filter_entry in pairs(player_data["filter"]) do
-						if filter_entry and filter_entry ~= "" then
-							table.insert(tmp_data, filter_entry)
-						end
-					end
+            for _, filter_entry in pairs(player_data["filter"]) do
+              if filter_entry and filter_entry ~= "" then
+                table.insert(tmp_data, filter_entry)
+              end
+            end
 
-					global["config"][player_index]["filter"] = tmp_data
-				end
-			end
-		elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.1" then
-			for _, player in pairs(game.players) do
-				if player.gui.top["filtered-deconstruction-planner-config-button"] then
-					player.gui.top["filtered-deconstruction-planner-config-button"].destroy()
-				end
-				if player.gui.left["filtered-deconstruction-planner-frame"] then
-					player.gui.left["filtered-deconstruction-planner-frame"].destroy()
-				end
-			end
-		end
-		if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.4.2" then
-		  global.config = {}
-		end
-	end
+            global["config"][player_index]["filter"] = tmp_data
+          end
+        end
+      elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.1" then
+        for _, player in pairs(game.players) do
+          if player.gui.top["filtered-deconstruction-planner-config-button"] then
+            player.gui.top["filtered-deconstruction-planner-config-button"].destroy()
+          end
+          if player.gui.left["filtered-deconstruction-planner-frame"] then
+            player.gui.left["filtered-deconstruction-planner-frame"].destroy()
+          end
+        end
+      end
+      if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.4.2" then
+        global.config = {}
+      end
+    end
 
-	fdp_init_global()
-	fdp_init_players()
-	fdp_init_gui()
-end)
+    fdp_init_global()
+    fdp_init_players()
+    fdp_init_gui()
+  end)
 
 -- on_player_create event handler
 script.on_event(defines.events.on_player_created, function(event)
-	fdp_init_player(game.players[event.player_index])
-end)
+    fdp_init_player(game.players[event.player_index])
+  end)
 
 -- on_research_finished event handler
 script.on_event(defines.events.on_research_finished, function(event)
-	if event.research.name == 'automated-construction' then
-		for _, player in pairs (event.research.force.players) do
-			gui_init(player, true)
-		end
-	end
-end)
+    if event.research.name == 'automated-construction' then
+      for _, player in pairs (event.research.force.players) do
+        gui_init(player, true)
+      end
+    end
+  end)
 
 -- on_gui_click event handler
 script.on_event(defines.events.on_gui_click, function(event)
-	local event_element = event.element.name
-	local event_player  = game.players[event.player_index]
-	if not global["config"][event_player.index] then
-		fdp_init_player(event_player)
-	end
+    local event_element = event.element.name
+    local event_player = game.players[event.player_index]
+    if not global["config"][event_player.index] then
+      fdp_init_player(event_player)
+    end
 
-	if event_element == "fdp-gui-button" then
-		game.raise_event(FDP_EVENTS.on_gui_clicked, {player = event_player})
-	elseif event_element == "fdp-gui-normal-checkbox" then
-		game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "normal"})
-	elseif event_element == "fdp-gui-target-checkbox" then
-		game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "target"})
-	elseif event_element == "fdp-gui-exclude-checkbox" then
-		game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "exclude"})
-	elseif string.sub(event_element, 1, string.len("fdp-gui-filter-")) == "fdp-gui-filter-" then
-		local event_index = string.match(event_element, "fdp%-gui%-filter%-*(%d)")
-		if event_index then
-			game.raise_event(FDP_EVENTS.on_button_filter_clicked, {player = event_player, index = event_index})
-		end
-	elseif event_element == "fdp-gui-eyedropper-button" then
-		game.raise_event(FDP_EVENTS.on_button_eyedropper_clicked, {player = event_player})
-	elseif event_element == "fdp-gui-clear-button" then
-		game.raise_event(FDP_EVENTS.on_button_clear_clicked, {player = event_player})
-	elseif event_element == "fdp-gui-cut-button" then
-		game.raise_event(FDP_EVENTS.on_button_cut_clicked, {player = event_player})
-	end
-end)
+    if event_element == "fdp-gui-button" then
+      game.raise_event(FDP_EVENTS.on_gui_clicked, {player = event_player})
+    elseif event_element == "fdp-gui-normal-checkbox" then
+      game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "normal"})
+    elseif event_element == "fdp-gui-target-checkbox" then
+      game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "target"})
+    elseif event_element == "fdp-gui-exclude-checkbox" then
+      game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "exclude"})
+    elseif string.sub(event_element, 1, string.len("fdp-gui-filter-")) == "fdp-gui-filter-" then
+      local event_index = string.match(event_element, "fdp%-gui%-filter%-*(%d)")
+      if event_index then
+        game.raise_event(FDP_EVENTS.on_button_filter_clicked, {player = event_player, index = event_index})
+      end
+    elseif event_element == "fdp-gui-eyedropper-button" then
+      game.raise_event(FDP_EVENTS.on_button_eyedropper_clicked, {player = event_player})
+    elseif event_element == "fdp-gui-clear-button" then
+      game.raise_event(FDP_EVENTS.on_button_clear_clicked, {player = event_player})
+    elseif event_element == "fdp-gui-cut-button" then
+      game.raise_event(FDP_EVENTS.on_button_cut_clicked, {player = event_player})
+    end
+  end)
 
 -- on_marked_for_deconstruction event handler
 script.on_event(defines.events.on_marked_for_deconstruction, function(event)
-  if not event.player_index then
-    return
-  end
-	local player = game.players[event.player_index]
+    if not event.player_index then
+      return
+    end
+    local player = game.players[event.player_index]
 
-	if not global["config"][player.index] then
-		fdp_init_player(player)
-	end
+    if not global["config"][player.index] then
+      fdp_init_player(player)
+    end
 
-	if event.entity.name == "deconstructible-tile-proxy" and (global["config"][player.index]["mode"] ~= "normal" or global["config"][player.index]["eyedropping"]) then
-		event.entity.cancel_deconstruction(player.force)
-		return
-	end
+    if event.entity.name == "deconstructible-tile-proxy" and (global["config"][player.index]["mode"] ~= "normal" or global["config"][player.index]["eyedropping"]) then
+      event.entity.cancel_deconstruction(player.force)
+      return
+    end
 
-	if global["config"][player.index]["mode"] == "normal" and not global["config"][player.index]["eyedropping"] then
-		return
-	end
+    if global["config"][player.index]["mode"] == "normal" and not global["config"][player.index]["eyedropping"] then
+      return
+    end
 
-	local entity_name = get_entity_name(event.entity)
-	local is_configured = is_in_filter(player, entity_name)
+    local entity_name = get_entity_name(event.entity)
+    local is_configured = is_in_filter(player, entity_name)
 
-	if global["config"][player.index]["eyedropping"] then
-		event.entity.cancel_deconstruction(player.force)
-		if  not is_configured then
-			table.insert(global["config"][player.index]["filter"], entity_name)
-		end
-		gui_refresh(player)
-	else
-		if global["config"][player.index]["mode"] == "target" and not is_configured then
-			event.entity.cancel_deconstruction(player.force)
-		elseif global["config"][player.index]["mode"] == "exclude" and is_configured then
-			event.entity.cancel_deconstruction(player.force)
-		end
-	end
-end)
+    if global["config"][player.index]["eyedropping"] then
+      event.entity.cancel_deconstruction(player.force)
+      if not is_configured then
+        table.insert(global["config"][player.index]["filter"], entity_name)
+      end
+      gui_refresh(player)
+    else
+      if global["config"][player.index]["mode"] == "target" and not is_configured then
+        event.entity.cancel_deconstruction(player.force)
+      elseif global["config"][player.index]["mode"] == "exclude" and is_configured then
+        event.entity.cancel_deconstruction(player.force)
+      end
+    end
+  end)
