@@ -46,40 +46,8 @@ script.on_configuration_changed(function(data)
     end
 
     if data.mod_changes["filtered-deconstruction-planner"] and data.mod_changes["filtered-deconstruction-planner"].old_version then
-      if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.2.0" then
-        if global["config"] then
-          for player_index, filter_data in pairs(global["config"]) do
-            global["config"][player_index] = {}
-            global["config"][player_index]["mode"] = FDP_DEFAULT_FILTER_MODE
-            global["config"][player_index]["filter"] = filter_data or {}
-          end
-        end
-      elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.0" then
-        if global["config"] then
-          for player_index, player_data in pairs(global["config"]) do
-            local tmp_data = {}
-
-            for _, filter_entry in pairs(player_data["filter"]) do
-              if filter_entry and filter_entry ~= "" then
-                table.insert(tmp_data, filter_entry)
-              end
-            end
-
-            global["config"][player_index]["filter"] = tmp_data
-          end
-        end
-      elseif data.mod_changes["filtered-deconstruction-planner"].old_version < "0.3.1" then
-        for _, player in pairs(game.players) do
-          if player.gui.top["filtered-deconstruction-planner-config-button"] then
-            player.gui.top["filtered-deconstruction-planner-config-button"].destroy()
-          end
-          if player.gui.left["filtered-deconstruction-planner-frame"] then
-            player.gui.left["filtered-deconstruction-planner-frame"].destroy()
-          end
-        end
-      end
       if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.4.2" then
-        global.config = {}
+        global['config'] = {}
       end
     end
 
