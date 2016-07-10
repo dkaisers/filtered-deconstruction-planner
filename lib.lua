@@ -5,7 +5,7 @@ function get_entity_name(entity)
     return nil
   elseif entity.name == "item-on-ground" then
     return entity.stack.name
-  elseif not string.find(entity.name, "rock") and entity.type == "tree" then
+  elseif entity.type == "tree" then
     return "fdp-tree-proxy"
   else
     return entity.name
