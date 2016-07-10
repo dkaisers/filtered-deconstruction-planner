@@ -47,21 +47,24 @@ function gui_show_frame(player)
     type = "checkbox",
     name = "fdp-gui-normal-checkbox",
     caption = {"fdp-gui-normal-checkbox"},
-    state = global["config"][player.index]["mode"] == "normal"
+    state = global["config"][player.index]["mode"] == "normal",
+    tooltip = {"fdp-mode-normal-tooltip"}
   }
   mode_grid.add{type = "label", caption = " "}
   mode_grid.add{
     type = "checkbox",
     name = "fdp-gui-target-checkbox",
     caption = {"fdp-gui-target-checkbox"},
-    state = global["config"][player.index]["mode"] == "target"
+    state = global["config"][player.index]["mode"] == "target",
+    tooltip = {"fdp-mode-target-tooltip"}
   }
   mode_grid.add{type = "label", caption = " "}
   mode_grid.add{
     type = "checkbox",
     name = "fdp-gui-exclude-checkbox",
     caption = {"fdp-gui-exclude-checkbox"},
-    state = global["config"][player.index]["mode"] == "exclude"
+    state = global["config"][player.index]["mode"] == "exclude",
+    tooltip = {"fdp-mode-exclude-tooltip"}
   }
 
   if global["config"][player.index]["mode"] ~= "normal" then
@@ -77,35 +80,40 @@ function gui_show_frame(player)
     }
     local filter = global["config"][player.index]["filter"]
     for i = 1, (#filter + 1) do
-      local style = filter[i] or "style"
+      local sprite = filter[i] or ""
       filter_table.add{
-        type = "checkbox",
+        type = "sprite-button",
         name = "fdp-gui-filter-"..i,
-        style = "fdp-icon-"..style,
-        state = false
+        style = "fdp-sprite-button-style",
+        sprite = get_sprite_for_filter(sprite)
       }
     end
 
+    tmp_grid.add{type = "label", caption = " ", style = "fdp-mini-label"}
+
     local button_grid = tmp_grid.add{
-      type = "flow",
+      type = "table",
       name = "fdp-gui-button-grid",
-      direction = "horizontal"
+      colspan = "3"
     }
     local style = global["config"][player.index]["eyedropping"] and "deactivate" or "activate"
     button_grid.add{
       type = "button",
       name = "fdp-gui-eyedropper-button",
-      style = "fdp-button-eyedropper-"..style
+      style = "fdp-button-eyedropper-"..style,
+      tooltip = {"fdp-btn-eyedropper-tooltip"}
     }
     button_grid.add{
       type = "button",
       name = "fdp-gui-cut-button",
-      style = "fdp-button-cut"
+      style = "fdp-button-cut",
+      tooltip = {"fdp-btn-cut-tooltip"}
     }
     button_grid.add{
       type = "button",
       name = "fdp-gui-clear-button",
-      style = "fdp-button-clear"
+      style = "fdp-button-clear",
+      tooltip = {"fdp-btn-clear-tooltip"}
     }
   end
 end

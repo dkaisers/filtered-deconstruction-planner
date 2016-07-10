@@ -12,6 +12,19 @@ function get_entity_name(entity)
   end
 end
 
+-- Return the sprite identifier for a given filter
+function get_sprite_for_filter(filter)
+  if filter == "" then
+    return ""
+  elseif filter == "fdp-tree-proxy" then
+    return "entity/tree-03"
+  elseif filter == "stone-rock" then
+    return "entity/stone-rock"
+  else
+    return "item/"..filter
+  end
+end
+
 -- Check if the given entity-name is in the current filter configuration
 function is_in_filter(player, entity_name)
   for i = 1, #global["config"][player.index]["filter"] do

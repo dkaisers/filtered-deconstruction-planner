@@ -9,7 +9,7 @@ data:extend({
       type = "font",
       name = "fdp-mini-font",
       from = "default",
-      size = 4
+      size = 2
     }
   })
 
@@ -32,12 +32,12 @@ for _, mode in pairs(modes) do
   data.raw["gui-style"].default["fdp-gui-button-"..mode] = {
     type = "button_style",
     parent = "button_style",
-    width = 33,
-    height = 33,
+    width = 32,
+    height = 32,
     font = "fdp-small-font",
-    top_padding = 6,
-    right_padding = 6,
-    bottom_padding = 6,
+    top_padding = 0,
+    right_padding = 0,
+    bottom_padding = 0,
     left_padding = 0,
     default_graphical_set = {
       type = "monolith",
@@ -86,6 +86,10 @@ for _, button in pairs(buttons) do
     parent = "button_style",
     width = 32,
     height = 32,
+    top_padding = 0,
+    right_padding = 0,
+    bottom_padding = 0,
+    left_padding = 0,
     default_graphical_set = {
       type = "monolith",
       monolith_image = {
@@ -118,3 +122,45 @@ for _, button in pairs(buttons) do
     }
   }
 end
+
+-- Filter button style
+data.raw["gui-style"].default["fdp-sprite-button-style"] = {
+  type = "button_style",
+  parent = "button_style",
+  width = 32,
+  height = 32,
+  top_padding = 0,
+  left_padding = 0,
+  right_padding = 0,
+  bottom_padding = 0,
+  default_graphical_set = {
+    type = "monolith",
+    monolith_image = {
+      filename = "__core__/graphics/gui.png",
+      priority = "extra-high-no-scale",
+      width = 32,
+      height = 32,
+      x = 111
+    }
+  },
+  hovered_graphical_set = {
+    type = "monolith",
+    monolith_image = {
+      filename = "__core__/graphics/gui.png",
+      priority = "extra-high-no-scale",
+      width = 32,
+      height = 32,
+      x = 111
+    }
+  },
+  clicked_graphical_set = {
+    type = "monolith",
+    monolith_image = {
+      filename = "__core__/graphics/gui.png",
+      priority = "extra-high-no-scale",
+      width = 32,
+      height = 32,
+      x = 111
+    }
+  }
+}
