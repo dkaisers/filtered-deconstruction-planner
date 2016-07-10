@@ -111,11 +111,6 @@ script.on_event(defines.events.on_marked_for_deconstruction, function(event)
       fdp_init_player(player)
     end
 
-    if event.entity.name == "deconstructible-tile-proxy" and (global["config"][player.index]["mode"] ~= "normal" or global["config"][player.index]["eyedropping"]) then
-      event.entity.cancel_deconstruction(player.force)
-      return
-    end
-
     if global["config"][player.index]["mode"] == "normal" and not global["config"][player.index]["eyedropping"] then
       return
     end

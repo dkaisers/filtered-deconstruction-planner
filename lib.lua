@@ -5,6 +5,8 @@ function get_entity_name(entity)
     return nil
   elseif entity.name == "item-on-ground" then
     return entity.stack.name
+  elseif entity.name == "deconstructible-tile-proxy" then
+    return entity.surface.get_tile(entity.position.x, entity.position.y).prototype.mineable_properties.products[1].name
   elseif entity.type == "tree" then
     return "fdp-tree-proxy"
   else
