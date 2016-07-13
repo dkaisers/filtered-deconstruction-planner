@@ -3,6 +3,8 @@
 function get_entity_name(entity)
   if not entity then
     return nil
+  elseif entity.prototype.mineable_properties.products[1].name == "rail" then
+    return "rail"
   elseif entity.name == "item-on-ground" then
     return entity.stack.name
   elseif entity.name == "deconstructible-tile-proxy" then
