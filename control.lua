@@ -51,6 +51,14 @@ script.on_configuration_changed(function(data)
       end
     end
 
+    for _, player in pairs(game.players) do
+      for i = #global["config"][player.index]["filter"], 1, -1 do
+        if not player.gui.is_valid_sprite_path(get_sprite_for_filter(global["config"][player.index]["filter"][i])) then
+          table.remove(global["config"][player.index]["filter"], i)
+        end
+      end
+    end
+
     fdp_init_global()
     fdp_init_players()
     fdp_init_gui()
