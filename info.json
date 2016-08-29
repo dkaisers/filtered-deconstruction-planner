@@ -1,10 +1,10 @@
 {
   "name": "filtered-deconstruction-planner",
-  "version": "0.4.6",
-  "factorio_version": "0.13",
+  "version": "0.4.7",
+  "factorio_version": "0.14",
   "title": "Filtered Deconstruction Planner",
   "author": "Dominik Kaisers (NearlyDutch)",
   "homepage": "https://github.com/dkaisers/filtered-deconstruction-planner",
-  "dependencies": ["base >= 0.13.0"],
+  "dependencies": ["base >= 0.14.1"],
   "description": "Adds the ability for entities to be targeted for or be excluded from deconstruction by bots."
 }

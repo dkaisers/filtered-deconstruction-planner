@@ -46,15 +46,17 @@ script.on_configuration_changed(function(data)
     end
 
     if data.mod_changes["filtered-deconstruction-planner"] and data.mod_changes["filtered-deconstruction-planner"].old_version then
-      if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.4.2" then
-        global['config'] = {}
+      if data.mod_changes["filtered-deconstruction-planner"].old_version < "0.4.7" then
+        global["config"] = {}
       end
     end
 
     for _, player in pairs(game.players) do
-      for i = #global["config"][player.index]["filter"], 1, -1 do
-        if not player.gui.is_valid_sprite_path(get_sprite_for_filter(global["config"][player.index]["filter"][i])) then
-          table.remove(global["config"][player.index]["filter"], i)
+      if global ~= nil and global["config"] ~= nil and global["config"][player.index] ~= nil and global["config"][player.index]["filter"] ~= nil then
+        for i = #global["config"][player.index]["filter"], 1, -1 do
+          if not player.gui.is_valid_sprite_path(get_sprite_for_filter(global["config"][player.index]["filter"][i])) then
+            table.remove(global["config"][player.index]["filter"], i)
+          end
         end
       end
     end
