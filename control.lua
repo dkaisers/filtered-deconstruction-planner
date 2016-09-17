@@ -132,8 +132,8 @@ script.on_event(defines.events.on_marked_for_deconstruction, function(event)
       event.entity.cancel_deconstruction(player.force)
       if not is_configured then
         table.insert(global["config"][player.index]["filter"], entity_name)
+        gui_refresh(player)
       end
-      gui_refresh(player)
     else
       if global["config"][player.index]["mode"] == "target" and not is_configured then
         event.entity.cancel_deconstruction(player.force)
