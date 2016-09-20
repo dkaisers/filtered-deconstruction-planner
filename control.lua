@@ -97,7 +97,7 @@ script.on_event(defines.events.on_gui_click, function(event)
     elseif event_element == "fdp-gui-exclude-checkbox" then
       game.raise_event(FDP_EVENTS.on_mode_changed, {player = event_player, mode = "exclude"})
     elseif string.sub(event_element, 1, string.len("fdp-gui-filter-")) == "fdp-gui-filter-" then
-      local event_index = string.match(event_element, "fdp%-gui%-filter%-*(%d)")
+      local event_index = string.match(event_element, "fdp%-gui%-filter%-*(%d+)")
       if event_index then
         game.raise_event(FDP_EVENTS.on_button_filter_clicked, {player = event_player, index = event_index})
       end
