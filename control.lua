@@ -115,6 +115,10 @@ script.on_event(defines.events.on_marked_for_deconstruction, function(event)
     end
     local player = game.players[event.player_index]
 
+    if player.cursor_stack.valid_for_read and player.cursor_stack.name ~= "deconstruction-planner" then
+        return
+    end
+
     if not global["config"][player.index] then
       fdp_init_player(player)
     end
